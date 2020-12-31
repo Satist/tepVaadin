@@ -15,6 +15,10 @@ public abstract class AbstractEntity {
         return id;
     }
 
+    public String getStringID(){
+        return id.toString();
+    }
+
     public void setId(Integer id) {
         this.id = id;
     }

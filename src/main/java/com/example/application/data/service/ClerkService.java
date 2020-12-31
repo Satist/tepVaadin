@@ -2,9 +2,12 @@ package com.example.application.data.service;
 
 import com.example.application.data.entity.Clerk;
 
+import com.example.application.data.entity.Patient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.vaadin.artur.helpers.CrudService;
+
+import java.util.Collection;
 
 @Service
 public class ClerkService extends CrudService<Clerk, Integer> {
@@ -20,4 +23,7 @@ public class ClerkService extends CrudService<Clerk, Integer> {
         return repository;
     }
 
+    public Collection<Clerk> getAll(){
+        return repository.findAll();
+    }
 }

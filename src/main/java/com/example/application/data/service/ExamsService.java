@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.vaadin.artur.helpers.CrudService;
 
-import java.util.List;
+import java.util.Collection;
 
 @Service
 
@@ -22,4 +22,7 @@ public class ExamsService extends CrudService<Exams, Integer> {
         return repository;
     }
 
+    public Collection<Exams> getAll(){
+        return repository.findAll();
+    }
 }

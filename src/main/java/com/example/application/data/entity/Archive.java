@@ -1,11 +1,10 @@
 package com.example.application.data.entity;
 
 import com.example.application.data.AbstractEntity;
+import org.springframework.lang.NonNull;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Transient;
+import javax.persistence.*;
+import java.util.Optional;
 
 @Entity
 public class Archive extends AbstractEntity {
@@ -18,7 +17,9 @@ public class Archive extends AbstractEntity {
     @ManyToOne
     @JoinColumn(name = "patient_id")
     private Patient patient;
-
+    @ManyToOne
+    @JoinColumn(name = "exams_id")
+    private Exams exams;
 
     public String getIn_date() { return in_date; }
     public String getOut_date() { return out_date; }
@@ -48,5 +49,20 @@ public class Archive extends AbstractEntity {
 
     public Diseases getDiseases() {
         return diseases;
+    }
+
+    public void setExams(Exams exams) {
+        this.exams = exams;
+    }
+
+    public Exams getExams() {
+        return exams;
+    }
+
+    public void setDiseaseID(Integer id){
+        diseases.setId(id);
+    }
+    public void setExamsID(Integer id){
+        exams.setId(id);
     }
 }

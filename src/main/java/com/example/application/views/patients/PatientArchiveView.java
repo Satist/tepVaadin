@@ -1,4 +1,4 @@
-package com.example.application.views.archive;
+package com.example.application.views.patients;
 
 import com.example.application.data.entity.Archive;
 import com.example.application.data.entity.Diseases;
@@ -11,6 +11,7 @@ import com.example.application.data.service.PatientService;
 import com.example.application.views.main.MainView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasStyle;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -25,17 +26,18 @@ import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.artur.helpers.CrudServiceDataProvider;
 
 import java.util.Optional;
 
 @Route(value = "archive", layout = MainView.class)
 @PageTitle("Archive")
 @CssImport("./styles/views/patients/patients-view.css")
-public class ArchiveView extends Div {
+public class PatientArchiveView extends Div implements HasUrlParameter<String> {
     private Grid<Archive> archiveGrid = new Grid<>(Archive.class, false);
     private ComboBox<Exams> exams;
     private ComboBox<Diseases> diseases;
@@ -43,17 +45,17 @@ public class ArchiveView extends Div {
     private TextField in_date;
     private TextField out_date;
     private ComboBox<Patient> patientID;
-
     private Button cancel = new Button("Cancel");
     private Button save = new Button("Save");
-
+    private PatientService patientService;
     private BeanValidationBinder<Archive> binder;
 
     private Archive archive;
 
-    public ArchiveView(@Autowired ArchiveService archiveService, @Autowired ExamsService  examsService, @Autowired DiseaseService diseaseService, @Autowired PatientService patientService){
+    public PatientArchiveView(@Autowired ArchiveService archiveService ,@Autowired ExamsService  examsService, @Autowired DiseaseService diseaseService, @Autowired PatientService patientService){
         setId("archive-view");
         // Create UI
+        this.patientService=patientService;
         SplitLayout splitLayout = new SplitLayout();
         splitLayout.setSizeFull();
         createGridLayout(splitLayout);
@@ -65,10 +67,9 @@ public class ArchiveView extends Div {
         archiveGrid.addColumn("symptoms").setAutoWidth(true);
         archiveGrid.addColumn(archive->(archive.getExams()!=null)?archive.getExams().getName():"").setAutoWidth(true).setHeader("Exam");
         archiveGrid.addColumn(archive->(archive.getDiseases()!=null)?archive.getDiseases().getName():"").setAutoWidth(true).setHeader("Disease");
-       // archiveGrid.addColumn("drugs").setAutoWidth(true);
+        // archiveGrid.addColumn("drugs").setAutoWidth(true);
         archiveGrid.addColumn("in_date").setAutoWidth(true);
         archiveGrid.addColumn("out_date").setAutoWidth(true);
-        archiveGrid.setDataProvider(new CrudServiceDataProvider<>(archiveService));
         archiveGrid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         archiveGrid.setHeightFull();
 
@@ -115,6 +116,7 @@ public class ArchiveView extends Div {
                 clearForm();
                 refreshGrid();
                 Notification.show("Patient details stored.");
+                UI.getCurrent().getPage().reload();
             } catch (ValidationException validationException) {
                 Notification.show("An exception happened while trying to store the patient details.");
             }
@@ -142,7 +144,6 @@ public class ArchiveView extends Div {
         diseases.setItems(diseaseService.getAll());
         patientID=new ComboBox<>("Patient ID");
         patientID.setItemLabelGenerator(Patient::getStringID);
-        patientID.setItems(patientService.getAll());
         Component[] fields = new Component[]{patientID, symptom,exams,diseases,in_date, out_date};
 
         for (Component field : fields) {
@@ -187,5 +188,14 @@ public class ArchiveView extends Div {
         this.archive = value;
         binder.readBean(this.archive);
 
+    }
+
+    @Override
+    public void setParameter(BeforeEvent event, String parameter) {
+        Integer i = Integer.parseInt(parameter);
+        if (this.patientService.get(i).isPresent()) {
+            archiveGrid.setItems(this.patientService.get(i).get().getArchives());
+            patientID.setItems(patientService.get(i).get());
+        }
     }
 }

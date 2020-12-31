@@ -14,7 +14,7 @@ public class Patient extends AbstractEntity {
     private String name;
     private String address;
     private String insurance;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "patient")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "patient")
     private List<Archive> archives;
 
     public String getName() {
@@ -42,4 +42,11 @@ public class Patient extends AbstractEntity {
         this.amka = amka;
     }
 
+    public List<Archive> getArchives() {
+        return archives;
+    }
+
+    public void setArchives(List<Archive> archives) {
+        this.archives = archives;
+    }
 }

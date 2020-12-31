@@ -1,12 +1,10 @@
 package com.example.application.views.patients;
 
-import java.util.Optional;
-
 import com.example.application.data.entity.Patient;
 import com.example.application.data.service.PatientService;
+import com.example.application.views.main.MainView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasStyle;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -17,19 +15,17 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.data.converter.StringToIntegerConverter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.vaadin.artur.helpers.CrudServiceDataProvider;
-import com.example.application.views.main.MainView;
-import com.vaadin.flow.data.converter.StringToIntegerConverter;
-import com.vaadin.flow.component.textfield.TextField;
 
-import javax.validation.constraints.Null;
+import java.util.Optional;
+
 
 @Route(value = "patients", layout = MainView.class)
 @PageTitle("Patients")
@@ -97,8 +93,7 @@ public class PatientsView extends Div {
         binder.bindInstanceFields(this);
 
         archive.addClickListener(e->{
-           if (!amka.getValue().equals("")) //needs change to real archive check
-               UI.getCurrent().getPage().setLocation("http://localhost:8080/clerks");
+            archive.getUI().ifPresent(ui -> ui.navigate(PatientArchiveView.class,id.getValue()));
         });
 
         cancel.addClickListener(e -> {
