@@ -1,13 +1,7 @@
 package com.example.application.views.patients;
 
-import com.example.application.data.entity.Archive;
-import com.example.application.data.entity.Diseases;
-import com.example.application.data.entity.Exams;
-import com.example.application.data.entity.Patient;
-import com.example.application.data.service.ArchiveService;
-import com.example.application.data.service.DiseaseService;
-import com.example.application.data.service.ExamsService;
-import com.example.application.data.service.PatientService;
+import com.example.application.data.entity.*;
+import com.example.application.data.service.*;
 import com.example.application.views.main.MainView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasStyle;
@@ -31,6 +25,7 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.util.Optional;
 
@@ -41,6 +36,7 @@ public class PatientArchiveView extends Div implements HasUrlParameter<String> {
     private Grid<Archive> archiveGrid = new Grid<>(Archive.class, false);
     private ComboBox<Exams> exams;
     private ComboBox<Diseases> diseases;
+    private MultiselectComboBox<Drug> drugs;
     private TextField symptom;
     private TextField in_date;
     private TextField out_date;
@@ -52,14 +48,14 @@ public class PatientArchiveView extends Div implements HasUrlParameter<String> {
 
     private Archive archive;
 
-    public PatientArchiveView(@Autowired ArchiveService archiveService ,@Autowired ExamsService  examsService, @Autowired DiseaseService diseaseService, @Autowired PatientService patientService){
+    public PatientArchiveView(@Autowired ArchiveService archiveService , @Autowired ExamsService  examsService, @Autowired DiseaseService diseaseService, @Autowired PatientService patientService, @Autowired DrugService drugService){
         setId("archive-view");
         // Create UI
         this.patientService=patientService;
         SplitLayout splitLayout = new SplitLayout();
         splitLayout.setSizeFull();
         createGridLayout(splitLayout);
-        createEditorLayout(splitLayout,examsService,diseaseService,patientService);
+        createEditorLayout(splitLayout,examsService,diseaseService,patientService,drugService);
         add(splitLayout);
         // Configure ArchiveGrid
         archiveGrid.addColumn("id").setAutoWidth(true);
@@ -67,10 +63,10 @@ public class PatientArchiveView extends Div implements HasUrlParameter<String> {
         archiveGrid.addColumn("symptoms").setAutoWidth(true);
         archiveGrid.addColumn(archive->(archive.getExams()!=null)?archive.getExams().getName():"").setAutoWidth(true).setHeader("Exam");
         archiveGrid.addColumn(archive->(archive.getDiseases()!=null)?archive.getDiseases().getName():"").setAutoWidth(true).setHeader("Disease");
-        // archiveGrid.addColumn("drugs").setAutoWidth(true);
+        archiveGrid.addColumn(archive->(archive.getDrugs()!=null)?archive.getDrugsNames():"").setAutoWidth(true).setHeader("Drugs");
         archiveGrid.addColumn("in_date").setAutoWidth(true);
         archiveGrid.addColumn("out_date").setAutoWidth(true);
-        archiveGrid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
+        archiveGrid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
         archiveGrid.setHeightFull();
 
 
@@ -99,6 +95,7 @@ public class PatientArchiveView extends Div implements HasUrlParameter<String> {
         binder.forField(symptom).bind("symptoms");
         binder.forField(in_date).bind("in_date");
         binder.forField(out_date).bind("out_date");
+        binder.forField(drugs).bind("drugs");
         binder.bindInstanceFields(this);
 
         cancel.addClickListener(e -> {
@@ -124,7 +121,7 @@ public class PatientArchiveView extends Div implements HasUrlParameter<String> {
 
     }
 
-    private void createEditorLayout(SplitLayout splitLayout,ExamsService examsService,DiseaseService diseaseService,PatientService patientService) {
+    private void createEditorLayout(SplitLayout splitLayout,ExamsService examsService,DiseaseService diseaseService,PatientService patientService,DrugService drugService) {
         Div editorLayoutDiv = new Div();
         editorLayoutDiv.setId("editor-layout");
 
@@ -138,13 +135,16 @@ public class PatientArchiveView extends Div implements HasUrlParameter<String> {
         symptom=new TextField("Symptoms");
         exams=new ComboBox<>("Exams");
         diseases=new ComboBox<>("Diseases");
+        drugs=new MultiselectComboBox<>("Drugs");
         exams.setItemLabelGenerator(Exams::getName);
         exams.setItems(examsService.getAll());
         diseases.setItemLabelGenerator(Diseases::getName);
         diseases.setItems(diseaseService.getAll());
         patientID=new ComboBox<>("Patient ID");
         patientID.setItemLabelGenerator(Patient::getStringID);
-        Component[] fields = new Component[]{patientID, symptom,exams,diseases,in_date, out_date};
+        drugs.setItemLabelGenerator(Drug::getName);
+        drugs.setItems(drugService.getAll());
+        Component[] fields = new Component[]{patientID, symptom,exams,diseases,drugs,in_date, out_date};
 
         for (Component field : fields) {
             ((HasStyle) field).addClassName("full-width");
@@ -196,6 +196,7 @@ public class PatientArchiveView extends Div implements HasUrlParameter<String> {
         if (this.patientService.get(i).isPresent()) {
             archiveGrid.setItems(this.patientService.get(i).get().getArchives());
             patientID.setItems(patientService.get(i).get());
+
         }
     }
 }

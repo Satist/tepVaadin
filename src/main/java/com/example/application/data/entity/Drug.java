@@ -1,8 +1,15 @@
 package com.example.application.data.entity;
 
 import com.example.application.data.AbstractEntity;
-
+import com.example.application.data.entity.Archive;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Drug extends AbstractEntity {
@@ -10,6 +17,8 @@ public class Drug extends AbstractEntity {
     private String type;
     private int mg;
     private String disease;
+    @ManyToMany(mappedBy = "drugs",fetch = FetchType.EAGER)
+    private Set<Archive> archives= new HashSet<>();
 
     public void setName(String name) { this.name = name; }
     public String getName() { return name; }
@@ -19,4 +28,12 @@ public class Drug extends AbstractEntity {
     public void setType(String type) { this.type = type; }
     public int getMg() { return mg; }
     public String getType() { return type; }
+
+    public void setArchives(Set<Archive> archives) {
+        this.archives = archives;
+    }
+
+    public Set<Archive> getArchives() {
+        return archives;
+    }
 }

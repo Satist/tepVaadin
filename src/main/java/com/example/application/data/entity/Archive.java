@@ -4,7 +4,7 @@ import com.example.application.data.AbstractEntity;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
-import java.util.Optional;
+import java.util.*;
 
 @Entity
 public class Archive extends AbstractEntity {
@@ -20,7 +20,9 @@ public class Archive extends AbstractEntity {
     @ManyToOne
     @JoinColumn(name = "exams_id")
     private Exams exams;
-
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "patient_to_drugs",joinColumns = @JoinColumn(name = "archive_id"),inverseJoinColumns = @JoinColumn(name = "drug_id"))
+    private Set<Drug> drugs= new HashSet<>();
     public String getIn_date() { return in_date; }
     public String getOut_date() { return out_date; }
     public void setIn_date(String in_date) { this.in_date = in_date; }
@@ -59,10 +61,20 @@ public class Archive extends AbstractEntity {
         return exams;
     }
 
-    public void setDiseaseID(Integer id){
-        diseases.setId(id);
+    public void setDrugs(Set<Drug> drugs) {
+        this.drugs = drugs;
     }
-    public void setExamsID(Integer id){
-        exams.setId(id);
+
+    public Set<Drug> getDrugs() {
+        return drugs;
+    }
+
+    public String getDrugsNames(){
+        StringBuilder names = new StringBuilder();
+        for (Drug drug : drugs) {
+            names.append(drug.getName());
+            names.append(" ");
+        }
+        return names.toString();
     }
 }

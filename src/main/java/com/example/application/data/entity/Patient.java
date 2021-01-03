@@ -7,6 +7,7 @@ import javax.persistence.OneToMany;
 import com.example.application.data.AbstractEntity;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Patient extends AbstractEntity {
@@ -15,7 +16,7 @@ public class Patient extends AbstractEntity {
     private String address;
     private String insurance;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "patient")
-    private List<Archive> archives;
+    private Set<Archive> archives;
 
     public String getName() {
         return name;
@@ -42,11 +43,11 @@ public class Patient extends AbstractEntity {
         this.amka = amka;
     }
 
-    public List<Archive> getArchives() {
+    public Set<Archive> getArchives() {
         return archives;
     }
 
-    public void setArchives(List<Archive> archives) {
+    public void setArchives(Set<Archive> archives) {
         this.archives = archives;
     }
 }
