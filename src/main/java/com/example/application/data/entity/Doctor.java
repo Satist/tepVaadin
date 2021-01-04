@@ -1,15 +1,21 @@
 package com.example.application.data.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
 
 import com.example.application.data.AbstractEntity;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Doctor extends AbstractEntity {
 
     private String name;
     private String specialty;
-
+    @ManyToMany(mappedBy = "doctors",fetch = FetchType.EAGER)
+    private Set<Shift> shifts= new HashSet<>();
     public String getName() {
         return name;
     }
@@ -23,4 +29,11 @@ public class Doctor extends AbstractEntity {
         this.specialty = specialty;
     }
 
+    public void setShifts(Set<Shift> shifts) {
+        this.shifts = shifts;
+    }
+
+    public Set<Shift> getShifts() {
+        return shifts;
+    }
 }

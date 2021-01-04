@@ -1,17 +1,16 @@
-package com.example.application.views.doctors;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
+package com.example.application.views.shift;
+import com.example.application.data.entity.Clerk;
 import com.example.application.data.entity.Doctor;
+import com.example.application.data.entity.Nurse;
+import com.example.application.data.entity.Shift;
+import com.example.application.data.service.ClerkService;
 import com.example.application.data.service.DoctorService;
+import com.example.application.data.service.NurseService;
+import com.example.application.data.service.ShiftService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
@@ -30,51 +29,57 @@ import org.vaadin.artur.helpers.CrudServiceDataProvider;
 import com.example.application.views.main.MainView;
 import com.vaadin.flow.data.converter.StringToIntegerConverter;
 import com.vaadin.flow.component.textfield.TextField;
+import org.vaadin.gatanaso.MultiselectComboBox;
 
-@Route(value = "doctors", layout = MainView.class)
-@PageTitle("Doctors")
-@CssImport("./styles/views/doctors/doctors-view.css")
-public class DoctorsView extends Div {
+import java.util.Optional;
 
-    private Grid<Doctor> grid = new Grid<>(Doctor.class, false);
+@Route(value = "shift", layout = MainView.class)
+@PageTitle("Shifts")
+@CssImport("./styles/views/nurses/nurses-view.css")
+public class ShiftView extends Div{
+    private Grid<Shift> grid = new Grid<>(Shift.class,false);
 
     private TextField id;
-    private TextField name;
-    private ComboBox<String> specialty;
+    private TextField date;
+    private MultiselectComboBox<Doctor> doctors;
+    private MultiselectComboBox<Nurse> nurses;
+    private MultiselectComboBox<Clerk> clerks;
 
     private Button cancel = new Button("Cancel");
     private Button save = new Button("Save");
 
-    private BeanValidationBinder<Doctor> binder;
+    private BeanValidationBinder<Shift> binder;
 
-    private Doctor doctor;
+    private Shift shift;
 
-    public DoctorsView(@Autowired DoctorService doctorService) {
-        setId("doctors-view");
-        // Create UI
-        SplitLayout splitLayout = new SplitLayout();
+    public ShiftView(@Autowired ShiftService shiftService, @Autowired DoctorService doctorService, @Autowired NurseService nurseService, @Autowired ClerkService clerkService){
+        setId("shift-view");
+        //Create UI
+        SplitLayout splitLayout =new SplitLayout();
         splitLayout.setSizeFull();
 
         createGridLayout(splitLayout);
-        createEditorLayout(splitLayout,doctorService);
+        createEditorLayout(splitLayout,doctorService,nurseService,clerkService);
 
         add(splitLayout);
 
         // Configure Grid
         grid.addColumn("id").setAutoWidth(true);
-        grid.addColumn("name").setAutoWidth(true);
-        grid.addColumn("specialty").setAutoWidth(true);
-        grid.setDataProvider(new CrudServiceDataProvider<>(doctorService));
+        grid.addColumn("date").setAutoWidth(true);
+        grid.addColumn(shift->(shift.getDoctors()!=null)?shift.getDoctorsID():"").setAutoWidth(true).setHeader("Doctor ID");
+        grid.addColumn(shift->(shift.getNursesID()!=null)?shift.getNursesID():"").setAutoWidth(true).setHeader("Nurse ID");
+        grid.addColumn(shift->(shift.getNurses()!=null)?shift.getNursesID():"").setAutoWidth(true).setHeader("Clerk ID");
+        grid.setDataProvider(new CrudServiceDataProvider<>(shiftService));
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         grid.setHeightFull();
 
         // when a row is selected or deselected, populate form
         grid.asSingleSelect().addValueChangeListener(event -> {
             if (event.getValue() != null) {
-                Optional<Doctor> doctorFromBackend = doctorService.get(event.getValue().getId());
+                Optional<Shift> shiftFromBackend = shiftService.get(event.getValue().getId());
                 // when a row is selected but the data is no longer available, refresh grid
-                if (doctorFromBackend.isPresent()) {
-                    populateForm(doctorFromBackend.get());
+                if (shiftFromBackend.isPresent()) {
+                    populateForm(shiftFromBackend.get());
                 } else {
                     refreshGrid();
                 }
@@ -83,12 +88,13 @@ public class DoctorsView extends Div {
             }
         });
 
+
         // Configure Form
-        binder = new BeanValidationBinder<>(Doctor.class);
+        binder = new BeanValidationBinder<>(Shift.class);
 
         // Bind fields. This where you'd define e.g. validation rules
         binder.forField(id).withConverter(new StringToIntegerConverter("Only numbers are allowed")).bind("id");
-        binder.forField(specialty).bind("specialty");
+
         binder.bindInstanceFields(this);
 
         cancel.addClickListener(e -> {
@@ -98,23 +104,22 @@ public class DoctorsView extends Div {
 
         save.addClickListener(e -> {
             try {
-                if (this.doctor == null) {
-                    this.doctor = new Doctor();
+                if (this.shift == null) {
+                    this.shift = new Shift();
                 }
-                binder.writeBean(this.doctor);
+                binder.writeBean(this.shift);
 
-                doctorService.update(this.doctor);
+                shiftService.update(this.shift);
                 clearForm();
                 refreshGrid();
-                Notification.show("Doctor details stored.");
+                Notification.show("Shift details stored.");
             } catch (ValidationException validationException) {
-                Notification.show("An exception happened while trying to store the doctor details.");
+                Notification.show("An exception happened while trying to store the shift details.");
             }
         });
-
     }
 
-    private void createEditorLayout(SplitLayout splitLayout,DoctorService doctorService) {
+    private void createEditorLayout(SplitLayout splitLayout,DoctorService doctorService,NurseService nurseService,ClerkService clerkService) {
         Div editorLayoutDiv = new Div();
         editorLayoutDiv.setId("editor-layout");
 
@@ -124,11 +129,17 @@ public class DoctorsView extends Div {
 
         FormLayout formLayout = new FormLayout();
         id = new TextField("Id");
-        name = new TextField("Name");
-        specialty = new ComboBox<>("Specialty");
-        List<String> spec= Arrays.asList("Immunology", "Neurology", "Internal Medicine", "Radiology", "Family Medicine", "Emergency Medicine");
-        specialty.setItems(spec);
-        Component[] fields = new Component[]{id, name, specialty};
+        date = new TextField("Date");
+        doctors = new MultiselectComboBox<>("Doctor ID");
+        nurses = new MultiselectComboBox<>("Nurse ID");
+        clerks = new MultiselectComboBox<>("Clerk ID");
+        doctors.setItemLabelGenerator(Doctor::getStringID);
+        doctors.setItems(doctorService.getAll());
+        nurses.setItemLabelGenerator(Nurse::getStringID);
+        nurses.setItems(nurseService.getAll());
+        clerks.setItemLabelGenerator(Clerk::getStringID);
+        clerks.setItems(clerkService.getAll());
+        Component[] fields = new Component[]{id, date,doctors,nurses,clerks};
 
         for (Component field : fields) {
             ((HasStyle) field).addClassName("full-width");
@@ -168,9 +179,10 @@ public class DoctorsView extends Div {
         populateForm(null);
     }
 
-    private void populateForm(Doctor value) {
-        this.doctor = value;
-        binder.readBean(this.doctor);
+    private void populateForm(Shift value) {
+        this.shift = value;
+        binder.readBean(this.shift);
 
     }
+
 }

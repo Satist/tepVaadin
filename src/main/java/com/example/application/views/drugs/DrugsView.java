@@ -1,12 +1,13 @@
-package com.example.application.views.doctors;
+package com.example.application.views.drugs;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import com.example.application.data.entity.Doctor;
+import com.example.application.data.entity.Drug;
 import com.example.application.data.service.DoctorService;
+import com.example.application.data.service.DrugService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.button.Button;
@@ -31,50 +32,54 @@ import com.example.application.views.main.MainView;
 import com.vaadin.flow.data.converter.StringToIntegerConverter;
 import com.vaadin.flow.component.textfield.TextField;
 
-@Route(value = "doctors", layout = MainView.class)
-@PageTitle("Doctors")
+@Route(value = "drugs", layout = MainView.class)
+@PageTitle("Drugs")
 @CssImport("./styles/views/doctors/doctors-view.css")
-public class DoctorsView extends Div {
+public class DrugsView extends Div {
 
-    private Grid<Doctor> grid = new Grid<>(Doctor.class, false);
+    private Grid<Drug> grid = new Grid<>(Drug.class, false);
 
     private TextField id;
     private TextField name;
-    private ComboBox<String> specialty;
+    private TextField mg;
+    private TextField disease;
+    private ComboBox<String> type;
 
     private Button cancel = new Button("Cancel");
     private Button save = new Button("Save");
 
-    private BeanValidationBinder<Doctor> binder;
+    private BeanValidationBinder<Drug> binder;
 
-    private Doctor doctor;
+    private Drug drug;
 
-    public DoctorsView(@Autowired DoctorService doctorService) {
-        setId("doctors-view");
+    public DrugsView(@Autowired DrugService drugService) {
+        setId("drugs-view");
         // Create UI
         SplitLayout splitLayout = new SplitLayout();
         splitLayout.setSizeFull();
 
         createGridLayout(splitLayout);
-        createEditorLayout(splitLayout,doctorService);
+        createEditorLayout(splitLayout,drugService);
 
         add(splitLayout);
 
         // Configure Grid
         grid.addColumn("id").setAutoWidth(true);
         grid.addColumn("name").setAutoWidth(true);
-        grid.addColumn("specialty").setAutoWidth(true);
-        grid.setDataProvider(new CrudServiceDataProvider<>(doctorService));
+        grid.addColumn("type").setAutoWidth(true);
+        grid.addColumn("mg").setAutoWidth(true);
+        grid.addColumn("disease").setAutoWidth(true);
+        grid.setDataProvider(new CrudServiceDataProvider<>(drugService));
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         grid.setHeightFull();
 
         // when a row is selected or deselected, populate form
         grid.asSingleSelect().addValueChangeListener(event -> {
             if (event.getValue() != null) {
-                Optional<Doctor> doctorFromBackend = doctorService.get(event.getValue().getId());
+                Optional<Drug> drugFromBackend = drugService.get(event.getValue().getId());
                 // when a row is selected but the data is no longer available, refresh grid
-                if (doctorFromBackend.isPresent()) {
-                    populateForm(doctorFromBackend.get());
+                if (drugFromBackend.isPresent()) {
+                    populateForm(drugFromBackend.get());
                 } else {
                     refreshGrid();
                 }
@@ -84,11 +89,12 @@ public class DoctorsView extends Div {
         });
 
         // Configure Form
-        binder = new BeanValidationBinder<>(Doctor.class);
+        binder = new BeanValidationBinder<>(Drug.class);
 
         // Bind fields. This where you'd define e.g. validation rules
         binder.forField(id).withConverter(new StringToIntegerConverter("Only numbers are allowed")).bind("id");
-        binder.forField(specialty).bind("specialty");
+        binder.forField(type).bind("type");
+        binder.forField(mg).withConverter(new StringToIntegerConverter("Only numbers are allowed")).bind("mg");
         binder.bindInstanceFields(this);
 
         cancel.addClickListener(e -> {
@@ -98,23 +104,23 @@ public class DoctorsView extends Div {
 
         save.addClickListener(e -> {
             try {
-                if (this.doctor == null) {
-                    this.doctor = new Doctor();
+                if (this.drug == null) {
+                    this.drug = new Drug();
                 }
-                binder.writeBean(this.doctor);
+                binder.writeBean(this.drug);
 
-                doctorService.update(this.doctor);
+                drugService.update(this.drug);
                 clearForm();
                 refreshGrid();
-                Notification.show("Doctor details stored.");
+                Notification.show("Drug details stored.");
             } catch (ValidationException validationException) {
-                Notification.show("An exception happened while trying to store the doctor details.");
+                Notification.show("An exception happened while trying to store the drug details.");
             }
         });
 
     }
 
-    private void createEditorLayout(SplitLayout splitLayout,DoctorService doctorService) {
+    private void createEditorLayout(SplitLayout splitLayout,DrugService drugService) {
         Div editorLayoutDiv = new Div();
         editorLayoutDiv.setId("editor-layout");
 
@@ -125,10 +131,12 @@ public class DoctorsView extends Div {
         FormLayout formLayout = new FormLayout();
         id = new TextField("Id");
         name = new TextField("Name");
-        specialty = new ComboBox<>("Specialty");
-        List<String> spec= Arrays.asList("Immunology", "Neurology", "Internal Medicine", "Radiology", "Family Medicine", "Emergency Medicine");
-        specialty.setItems(spec);
-        Component[] fields = new Component[]{id, name, specialty};
+        type = new ComboBox<>("Type");
+        disease=new TextField("Disease");
+        mg=new TextField("Mg");
+        List<String> spec= Arrays.asList("Pill", "Capsule", "Injection", "Inhaler", "Liquid", "Topical");
+        type.setItems(spec);
+        Component[] fields = new Component[]{id, name, type,mg,disease};
 
         for (Component field : fields) {
             ((HasStyle) field).addClassName("full-width");
@@ -168,9 +176,9 @@ public class DoctorsView extends Div {
         populateForm(null);
     }
 
-    private void populateForm(Doctor value) {
-        this.doctor = value;
-        binder.readBean(this.doctor);
+    private void populateForm(Drug value) {
+        this.drug = value;
+        binder.readBean(this.drug);
 
     }
 }

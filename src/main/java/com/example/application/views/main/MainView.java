@@ -2,8 +2,10 @@ package com.example.application.views.main;
 
 import java.util.Optional;
 
+import com.example.application.views.drugs.DrugsView;
 import com.example.application.views.nurses.NursesView;
 import com.example.application.views.archive.ArchiveView;
+import com.example.application.views.shift.ShiftView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -89,7 +91,7 @@ public class MainView extends AppLayout {
 
     private Component[] createMenuItems() {
         return new Tab[]{createTab("About", AboutView.class), createTab("Doctors", DoctorsView.class),
-                createTab("Clerks", ClerksView.class), createTab("Patients", PatientsView.class),createTab("Nurses", NursesView.class),createTab("Archive", ArchiveView.class)};
+                createTab("Clerks", ClerksView.class), createTab("Patients", PatientsView.class),createTab("Nurses", NursesView.class),createTab("Archive", ArchiveView.class),createTab("Drugs", DrugsView.class),createTab("Shift", ShiftView.class)};
     }
 
     private static Tab createTab(String text, Class<? extends Component> navigationTarget) {
