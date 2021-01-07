@@ -25,10 +25,10 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.util.Optional;
-
 @Route(value = "archive", layout = MainView.class)
 @PageTitle("Archive")
 @CssImport("./styles/views/patients/patients-view.css")
@@ -40,6 +40,7 @@ public class PatientArchiveView extends Div implements HasUrlParameter<String> {
     private TextField symptom;
     private TextField in_date;
     private TextField out_date;
+    private TextField long_disease;
     private ComboBox<Patient> patientID;
     private Button cancel = new Button("Cancel");
     private Button save = new Button("Save");
@@ -61,6 +62,7 @@ public class PatientArchiveView extends Div implements HasUrlParameter<String> {
         archiveGrid.addColumn("id").setAutoWidth(true);
         archiveGrid.addColumn("patient.id").setAutoWidth(true).setHeader("Patient ID");
         archiveGrid.addColumn("symptoms").setAutoWidth(true);
+        archiveGrid.addColumn("long_disease").setHeader("Past Diseases").setAutoWidth(true);
         archiveGrid.addColumn(archive->(archive.getExams()!=null)?archive.getExams().getName():"").setAutoWidth(true).setHeader("Exam");
         archiveGrid.addColumn(archive->(archive.getDiseases()!=null)?archive.getDiseases().getName():"").setAutoWidth(true).setHeader("Disease");
         archiveGrid.addColumn(archive->(archive.getDrugs()!=null)?archive.getDrugsNames():"").setAutoWidth(true).setHeader("Drugs");
@@ -136,6 +138,7 @@ public class PatientArchiveView extends Div implements HasUrlParameter<String> {
         exams=new ComboBox<>("Exams");
         diseases=new ComboBox<>("Diseases");
         drugs=new MultiselectComboBox<>("Drugs");
+        long_disease=new TextField("Past Diseases");
         exams.setItemLabelGenerator(Exams::getName);
         exams.setItems(examsService.getAll());
         diseases.setItemLabelGenerator(Diseases::getName);
@@ -144,7 +147,7 @@ public class PatientArchiveView extends Div implements HasUrlParameter<String> {
         patientID.setItemLabelGenerator(Patient::getStringID);
         drugs.setItemLabelGenerator(Drug::getName);
         drugs.setItems(drugService.getAll());
-        Component[] fields = new Component[]{patientID, symptom,exams,diseases,drugs,in_date, out_date};
+        Component[] fields = new Component[]{patientID, symptom,long_disease,exams,diseases,drugs,in_date, out_date};
 
         for (Component field : fields) {
             ((HasStyle) field).addClassName("full-width");

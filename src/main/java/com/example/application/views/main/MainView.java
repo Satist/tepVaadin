@@ -2,6 +2,7 @@ package com.example.application.views.main;
 
 import java.util.Optional;
 
+import com.example.application.views.dashboard.DashboardView;
 import com.example.application.views.drugs.DrugsView;
 import com.example.application.views.nurses.NursesView;
 import com.example.application.views.archive.ArchiveView;
@@ -90,7 +91,7 @@ public class MainView extends AppLayout {
     }
 
     private Component[] createMenuItems() {
-        return new Tab[]{createTab("About", AboutView.class), createTab("Doctors", DoctorsView.class),
+        return new Tab[]{createTab("About", AboutView.class),createTab("Dashboard", DashboardView.class), createTab("Doctors", DoctorsView.class),
                 createTab("Clerks", ClerksView.class), createTab("Patients", PatientsView.class),createTab("Nurses", NursesView.class),createTab("Archive", ArchiveView.class),createTab("Drugs", DrugsView.class),createTab("Shift", ShiftView.class)};
     }
 
@@ -116,4 +117,5 @@ public class MainView extends AppLayout {
     private String getCurrentPageTitle() {
         return getContent().getClass().getAnnotation(PageTitle.class).value();
     }
+
 }

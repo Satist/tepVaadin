@@ -22,6 +22,7 @@ import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.vaadin.artur.helpers.CrudServiceDataProvider;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
@@ -37,6 +38,7 @@ public class ArchiveView extends Div {
     private TextField symptom;
     private TextField in_date;
     private TextField out_date;
+    private TextField long_disease;
     private ComboBox<Patient> patientID;
     private MultiselectComboBox<Drug> drugs;
 
@@ -62,6 +64,7 @@ public class ArchiveView extends Div {
         archiveGrid.addColumn(archive->(archive.getExams()!=null)?archive.getExams().getName():"").setAutoWidth(true).setHeader("Exam");
         archiveGrid.addColumn(archive->(archive.getDiseases()!=null)?archive.getDiseases().getName():"").setAutoWidth(true).setHeader("Disease");
         archiveGrid.addColumn(archive->(archive.getDrugs()!=null)?archive.getDrugsNames():"").setAutoWidth(true).setHeader("Drugs");
+        archiveGrid.addColumn("long_disease").setAutoWidth(true).setHeader("Past Diseases");
         archiveGrid.addColumn("in_date").setAutoWidth(true);
         archiveGrid.addColumn("out_date").setAutoWidth(true);
         archiveGrid.setDataProvider(new CrudServiceDataProvider<>(archiveService));
@@ -134,6 +137,7 @@ public class ArchiveView extends Div {
         exams=new ComboBox<>("Exams");
         diseases=new ComboBox<>("Diseases");
         drugs=new MultiselectComboBox<>("Drugs");
+        long_disease=new TextField("Past Diseases");
         exams.setItemLabelGenerator(Exams::getName);
         exams.setItems(examsService.getAll());
         diseases.setItemLabelGenerator(Diseases::getName);
@@ -143,7 +147,7 @@ public class ArchiveView extends Div {
         patientID.setItems(patientService.getAll());
         drugs.setItemLabelGenerator(Drug::getName);
         drugs.setItems(drugService.getAll());
-        Component[] fields = new Component[]{patientID, symptom,exams,diseases,drugs,in_date, out_date};
+        Component[] fields = new Component[]{patientID, symptom,long_disease,exams,diseases,drugs,in_date, out_date};
 
         for (Component field : fields) {
             ((HasStyle) field).addClassName("full-width");

@@ -11,6 +11,7 @@ public class Archive extends AbstractEntity {
     private String out_date;
     private String in_date;
     private String symptoms;
+    private String long_disease;
     @ManyToOne
     @JoinColumn(name = "disease_id")
     private Diseases diseases;
@@ -76,5 +77,13 @@ public class Archive extends AbstractEntity {
             names.append(" ");
         }
         return names.toString();
+    }
+
+    public String getLong_disease() {
+        return long_disease;
+    }
+
+    public void setLong_disease(String long_disease) {
+        this.long_disease = long_disease;
     }
 }
