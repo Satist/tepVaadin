@@ -1,4 +1,5 @@
 package com.example.application.views.shift;
+
 import com.example.application.data.entity.Clerk;
 import com.example.application.data.entity.Doctor;
 import com.example.application.data.entity.Nurse;
@@ -7,6 +8,7 @@ import com.example.application.data.service.ClerkService;
 import com.example.application.data.service.DoctorService;
 import com.example.application.data.service.NurseService;
 import com.example.application.data.service.ShiftService;
+import com.example.application.views.main.MainView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.button.Button;
@@ -19,17 +21,14 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.data.converter.StringToIntegerConverter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.vaadin.artur.helpers.CrudServiceDataProvider;
-import com.example.application.views.main.MainView;
-import com.vaadin.flow.data.converter.StringToIntegerConverter;
-import com.vaadin.flow.component.textfield.TextField;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.util.Optional;

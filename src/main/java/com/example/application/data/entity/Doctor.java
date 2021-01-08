@@ -1,11 +1,10 @@
 package com.example.application.data.entity;
 
+import com.example.application.data.AbstractEntity;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
-
-import com.example.application.data.AbstractEntity;
-
 import java.util.HashSet;
 import java.util.Set;
 

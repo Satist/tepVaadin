@@ -1,11 +1,13 @@
 package com.example.application.views.main;
 
-import java.util.Optional;
-
+import com.example.application.views.about.AboutView;
+import com.example.application.views.archive.ArchiveView;
+import com.example.application.views.clerks.ClerksView;
 import com.example.application.views.dashboard.DashboardView;
+import com.example.application.views.doctors.DoctorsView;
 import com.example.application.views.drugs.DrugsView;
 import com.example.application.views.nurses.NursesView;
-import com.example.application.views.archive.ArchiveView;
+import com.example.application.views.patients.PatientsView;
 import com.example.application.views.shift.ShiftView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
@@ -13,8 +15,8 @@ import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -25,12 +27,9 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
-import com.example.application.views.main.MainView;
-import com.example.application.views.about.AboutView;
-import com.example.application.views.doctors.DoctorsView;
-import com.example.application.views.clerks.ClerksView;
-import com.example.application.views.patients.PatientsView;
 import com.vaadin.flow.theme.lumo.Lumo;
+
+import java.util.Optional;
 
 /**
  * The main view is a top-level placeholder for other views.

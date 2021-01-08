@@ -1,14 +1,11 @@
 package com.example.application.data.entity;
 
 import com.example.application.data.AbstractEntity;
-import com.example.application.data.entity.Archive;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity

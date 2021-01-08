@@ -1,10 +1,10 @@
 package com.example.application.data.entity;
 
 import com.example.application.data.AbstractEntity;
-import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Archive extends AbstractEntity {

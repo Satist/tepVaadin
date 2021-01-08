@@ -1,14 +1,12 @@
 package com.example.application.data.generator;
 
-import com.vaadin.flow.spring.annotation.SpringComponent;
-
-import com.example.application.data.service.DoctorRepository;
-import com.example.application.data.entity.Doctor;
-import com.example.application.data.service.ClerkRepository;
 import com.example.application.data.entity.Clerk;
-import com.example.application.data.service.PatientRepository;
+import com.example.application.data.entity.Doctor;
 import com.example.application.data.entity.Patient;
-
+import com.example.application.data.service.ClerkRepository;
+import com.example.application.data.service.DoctorRepository;
+import com.example.application.data.service.PatientRepository;
+import com.vaadin.flow.spring.annotation.SpringComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
