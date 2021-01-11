@@ -8,6 +8,7 @@ import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
@@ -18,13 +19,18 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.data.binder.Result;
 import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.data.binder.ValueContext;
+import com.vaadin.flow.data.converter.Converter;
+import com.vaadin.flow.data.converter.LocalDateToDateConverter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.artur.helpers.CrudServiceDataProvider;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Route(value = "archive", layout = MainView.class)
@@ -35,8 +41,8 @@ public class ArchiveView extends Div {
     private ComboBox<Exams> exams;
     private ComboBox<Diseases> diseases;
     private TextField symptom;
-    private TextField in_date;
-    private TextField out_date;
+    private DatePicker in_date;
+    private DatePicker out_date;
     private TextField long_disease;
     private ComboBox<Patient> patientID;
     private MultiselectComboBox<Drug> drugs;
@@ -94,8 +100,34 @@ public class ArchiveView extends Div {
         binder.forField(exams).bind("exams");
         binder.forField(patientID).bind("patient");
         binder.forField(symptom).bind("symptoms");
-        binder.forField(in_date).bind("in_date");
-        binder.forField(out_date).bind("out_date");
+        binder.forField(in_date).withConverter(new Converter<LocalDate, String>() {
+            @Override
+            public Result<String> convertToModel(LocalDate value, ValueContext context) {
+                if (value!=null)
+                    return Result.ok(value.toString());
+                return Result.error("No value");
+            }
+
+            @Override
+            public LocalDate convertToPresentation(String value, ValueContext context) {
+                return LocalDate.parse(value);
+            }
+
+        }).bind("in_date");
+        binder.forField(out_date).withConverter(new Converter<LocalDate, String>() {
+            @Override
+            public Result<String> convertToModel(LocalDate value, ValueContext context) {
+                if (value!=null)
+                    return Result.ok(value.toString());
+                return Result.error("No value");
+            }
+
+            @Override
+            public LocalDate convertToPresentation(String value, ValueContext context) {
+                return LocalDate.parse(value);
+            }
+
+        }).bind("out_date");
         binder.forField(drugs).bind("drugs");
         binder.bindInstanceFields(this);
 
@@ -130,8 +162,8 @@ public class ArchiveView extends Div {
         editorLayoutDiv.add(editorDiv);
 
         FormLayout formLayout = new FormLayout();
-        in_date = new TextField("In Date");
-        out_date = new TextField("Out Date");
+        in_date = new DatePicker("In Date");
+        out_date = new DatePicker("Out Date");
         symptom=new TextField("Symptoms");
         exams=new ComboBox<>("Exams");
         diseases=new ComboBox<>("Diseases");

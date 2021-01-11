@@ -13,6 +13,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
@@ -23,7 +24,11 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.data.binder.Result;
 import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.data.binder.ValueContext;
+import com.vaadin.flow.data.converter.Converter;
+import com.vaadin.flow.data.converter.LocalDateToDateConverter;
 import com.vaadin.flow.data.converter.StringToIntegerConverter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -31,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.artur.helpers.CrudServiceDataProvider;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Route(value = "shift", layout = MainView.class)
@@ -40,7 +46,7 @@ public class ShiftView extends Div{
     private Grid<Shift> grid = new Grid<>(Shift.class,false);
 
     private TextField id;
-    private TextField date;
+    private DatePicker date;
     private MultiselectComboBox<Doctor> doctors;
     private MultiselectComboBox<Nurse> nurses;
     private MultiselectComboBox<Clerk> clerks;
@@ -94,7 +100,20 @@ public class ShiftView extends Div{
 
         // Bind fields. This where you'd define e.g. validation rules
         binder.forField(id).withConverter(new StringToIntegerConverter("Only numbers are allowed")).bind("id");
+        binder.forField(date).withConverter(new Converter<LocalDate, String>() {
+            @Override
+            public Result<String> convertToModel(LocalDate value, ValueContext context) {
+                if (value!=null)
+                    return Result.ok(value.toString());
+                return Result.error("No value");
+            }
 
+            @Override
+            public LocalDate convertToPresentation(String value, ValueContext context) {
+                return LocalDate.parse(value);
+            }
+
+        }).bind("date");
         binder.bindInstanceFields(this);
 
         cancel.addClickListener(e -> {
@@ -129,7 +148,7 @@ public class ShiftView extends Div{
 
         FormLayout formLayout = new FormLayout();
         id = new TextField("Id");
-        date = new TextField("Date");
+        date = new DatePicker("Date");
         doctors = new MultiselectComboBox<>("Doctor ID");
         nurses = new MultiselectComboBox<>("Nurse ID");
         clerks = new MultiselectComboBox<>("Clerk ID");
