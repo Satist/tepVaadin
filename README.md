@@ -1,6 +1,6 @@
 # TEP
 
-
+An implementation of a hospital database on MySQL and a Front-end Solution in Vaadin.
 The project is a standard Maven project, so you can import it to your IDE of choice. [Read more how to set up a development environment](https://vaadin.com/docs/v14/flow/installing/installing-overview.html) for Vaadin projects (Windows, Linux, macOS). 
 
 
